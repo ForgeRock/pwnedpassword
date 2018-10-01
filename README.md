@@ -19,6 +19,8 @@ An authentication decision node which checks the supplied password against the H
 
 The Pwned Passwords service was created in August 2017 after NIST released guidance specifically recommending that user-provided passwords be checked against existing data breaches. In February 2018, version 2 of the service was released with more than half a billion passwords, each now also with a count of how many times they'd been seen exposed. A version 3 release in July 2018 contributed a further 15.6M passwords to bring the total to 517M.
 
+See also: https://www.troyhunt.com/ive-just-launched-pwned-passwords-version-2/ and NIST guidelines: https://pages.nist.gov/800-63-3/sp800-63b.html
+
 <b>Installation</b>
 
 Copy the .jar file from the ../target directory into the ../web-container/webapps/openam/WEB-INF/lib directory where AM is deployed.  Restart the web container to pick up the new node.  The node will then appear in the authentication trees components palette.
