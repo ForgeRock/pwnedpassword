@@ -49,11 +49,20 @@ public class HaveIBeenPwnedPasswordNode extends AbstractDecisionNode {
      * Configuration for the node.
      */
     public interface Config {
+
         @Attribute(order = 100)
-        default String password() { return "password"; }
+        default String apiKey() { return "apiKey"; }
+
         @Attribute(order = 200)
+        default String userAgent() { return "ForgeRock"; }
+
+        @Attribute(order = 300)
+        default String password() { return "password"; }
+
+        @Attribute(order = 400)
         default int threshold() { return 0; }
     }
+
 
 
     private final Config config;
@@ -106,8 +115,9 @@ public class HaveIBeenPwnedPasswordNode extends AbstractDecisionNode {
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
             conn.setRequestProperty("Accept", "application/json");
-            conn.setRequestProperty("user-agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.33 Safari/537.36");
-
+            conn.setRequestProperty("User-Agent", config.userAgent());
+            conn.setRequestProperty("hibp-api-key", config.apiKey());
+            
             if (conn.getResponseCode() != 200) {
                 debug.error("[" + DEBUG_FILE + "]: HTTP failed, response code:" + conn.getResponseCode());
                 throw new RuntimeException("[" + DEBUG_FILE + "]: HTTP error code : " + conn.getResponseCode());
