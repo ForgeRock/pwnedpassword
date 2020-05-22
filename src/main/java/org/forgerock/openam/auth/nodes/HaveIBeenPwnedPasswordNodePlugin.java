@@ -51,7 +51,7 @@ public class HaveIBeenPwnedPasswordNodePlugin extends AbstractNodeAmPlugin {
 
     @Override
     public String getPluginVersion() {
-        return "2.0.0";
+        return "2.1.0";
     }
 
     @Override

@@ -25,6 +25,7 @@ package org.forgerock.openam.auth.nodes;
 
 import com.google.inject.assistedinject.Assisted;
 import com.sun.identity.shared.debug.Debug;
+import org.forgerock.json.JsonValue;
 import org.forgerock.openam.auth.node.api.*;
 import org.forgerock.openam.core.CoreWrapper;
 import javax.inject.Inject;
@@ -61,6 +62,9 @@ public class HaveIBeenPwnedPasswordNode extends AbstractDecisionNode {
 
         @Attribute(order = 400)
         default int threshold() { return 0; }
+
+        @Attribute(order = 500)
+        default String breaches() { return "breaches"; }        
     }
 
 
@@ -102,13 +106,17 @@ public class HaveIBeenPwnedPasswordNode extends AbstractDecisionNode {
             // Assume compromised state
             return goTo(true).build();
         }
-        return goTo(haveIBeenPwnedPassword(hex)).build();
+        int breaches = haveIBeenPwnedPassword(hex);
+        JsonValue newSharedState = context.sharedState.copy();
+        if (config.breaches() != null) newSharedState.put(config.breaches(), breaches);
+        return goTo(breaches > config.threshold()).replaceSharedState(newSharedState).build();
     }
 
 
-    private boolean haveIBeenPwnedPassword(String hex) {
+    private int haveIBeenPwnedPassword(String hex) {
         hex = hex.toUpperCase();
         String prefix = hex.substring(0,5);
+        int response = 0;
         try {
             URL url = new URL("https://api.pwnedpasswords.com/range/" + prefix);
             debug.message("[" + DEBUG_FILE + "]: url = " + url);
@@ -133,7 +141,8 @@ public class HaveIBeenPwnedPasswordNode extends AbstractDecisionNode {
                     parts = output.split(":");
                     int breaches = Integer.parseInt(parts[1]);
                     // If password matched and number of hits is greater than threshold then compromised is true
-                    if (breaches > config.threshold()) return true;
+                    if (breaches > config.threshold()) response = breaches;
+
                 }
             }
             conn.disconnect();
@@ -144,8 +153,8 @@ public class HaveIBeenPwnedPasswordNode extends AbstractDecisionNode {
         }
 
         // No matching password found
-        debug.message("[" + DEBUG_FILE + "]: " + "Password is safe.");
-        return false;
+        debug.message("[" + DEBUG_FILE + "]: Breaches " + response);
+        return response;
     }
 
 }

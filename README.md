@@ -27,7 +27,7 @@ Copy the .jar file from the ../target directory into the ../web-container/webapp
 
 ###Usage
 
-The node configuration requires the name of the shared state variable (or transient shared state) containing the password to validate, and a threshold indicating the maximum number of recorded breaches the password is associated with before it is rejected. A value of 0 will reject any password which has been recorded in any breach.
+The node configuration requires the name of the shared state variable (or transient shared state) containing the password to validate, and a threshold indicating the maximum number of recorded breaches the password is associated with before it is rejected. A value of 0 will reject any password which has been recorded in any breach. Optionally the number of recorded breaches can be returned and stored in shared state. 
 
 This node provides 2 outcomes: true, indicating that the password is associated with a known breach, or false, indicating that no known breaches.
 
